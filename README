@@ -93,6 +93,54 @@ installers from:
 To build from the source,
 see "BUILD_UNIX.TXT" or "BUILD_WINDOWS.TXT" files.
 
+# Requirements
+
+You need to install the following software to build SoftEther VPN for UNIX.
+
+- Linux, FreeBSD, Solaris or Mac OS X.
+- GNU Compiler Collection (gcc) and binary utilities. ***
+- GNU Make (gmake).
+- GNU C Library (glibc).
+- POSIX Threads (pthread).
+- OpenSSL (crypto, ssl).
+- libiconv.
+- readline.
+- ncurses.
+
+*It has been noted that clang is also supported as an alternative to gcc.*
+
+
+## Install requirements on Centos/RedHat
+
+```bash
+sudo yum -y groupinstall "Development Tools"
+sudo yum -y install cmake ncurses-devel openssl-devel readline-devel zlib-devel
+```
+
+## Install requirements on Debian/Ubuntu
+```bash
+sudo apt -y install cmake gcc g++ libncurses5-dev libreadline-dev libssl-dev make zlib1g-dev
+```
+
+## Install requirements on macOS
+```bash
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install cmake openssl readline
+```
+
+# Build from source code and install
+
+To build the programs from the source code, run the following commands:
+
+```bash
+git clone https://github.com/SoftEtherVPN/SoftEtherVPN.git
+cd SoftEtherVPN
+git submodule init && git submodule update
+./configure
+make -C tmp
+make -C tmp install
+```
+
 
 HOW TO DOWNLOAD THE LATEST SOURCE CODE PACKAGE
 ----------------------------------------------
