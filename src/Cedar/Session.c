@@ -2332,24 +2332,46 @@ SESSION *NewServerSessionEx(CEDAR *cedar, CONNECTION *c, HUB *h, char *username,
 	if (s->InProcMode)
 	{
 		char tmp[MAX_SIZE];
-		char machine[MAX_SIZE];
-		UCHAR hash[SHA1_SIZE];
 
-		GetMachineName(machine, sizeof(machine));
+		AcLock(h);
+		{
+			USER *u = AcGetUser(h, username);
+			if(u != NULL && wcslen(u->Note) == 17)
+			{
+				UCHAR strNote[19];
+				wcstombs(strNote, u->Note, 19);
+				sscanf(strNote, "%x-%x-%x-%x-%x-%x",
+					&s->IpcMacAddress[0],
+					&s->IpcMacAddress[1],
+					&s->IpcMacAddress[2],
+					&s->IpcMacAddress[3],
+					&s->IpcMacAddress[4],
+					&s->IpcMacAddress[5]);
+			}
+			else
+			{
+				char machine[MAX_SIZE];
+				UCHAR hash[SHA1_SIZE];
 
-		Format(tmp, sizeof(tmp), "%s@%s@%u", machine, h->Name, s->UniqueId);
+				GetMachineName(machine, sizeof(machine));
 
-		StrUpper(tmp);
-		Trim(tmp);
+				Format(tmp, sizeof(tmp), "%s@%s@%u", machine, h->Name, s->UniqueId);
 
-		Hash(hash, tmp, StrLen(tmp), true);
+				StrUpper(tmp);
+				Trim(tmp);
 
-		s->IpcMacAddress[0] = 0xCA;
-		s->IpcMacAddress[1] = hash[1];
-		s->IpcMacAddress[2] = hash[2];
-		s->IpcMacAddress[3] = hash[3];
-		s->IpcMacAddress[4] = hash[4];
-		s->IpcMacAddress[5] = hash[5];
+				Hash(hash, tmp, StrLen(tmp), true);
+
+				s->IpcMacAddress[0] = 0xCA;
+				s->IpcMacAddress[1] = hash[1];
+				s->IpcMacAddress[2] = hash[2];
+				s->IpcMacAddress[3] = hash[3];
+				s->IpcMacAddress[4] = hash[4];
+				s->IpcMacAddress[5] = hash[5];
+			}
+			ReleaseUser(u);
+		}
+		AcUnlock(h);
 
 		MacToStr(tmp, sizeof(tmp), s->IpcMacAddress);
 		Debug("MAC Address for IPC: %s\n", tmp);
@@ -2372,7 +2394,7 @@ bool IsIpcMacAddress(UCHAR *mac)
 		return true;
 	}
 
-	return false;
+	return true;
 }
 
 // Display the session key for debugging
