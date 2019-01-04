@@ -133,7 +133,7 @@ brew install cmake openssl readline
 To build the programs from the source code, run the following commands:
 
 ```bash
-git clone https://github.com/SoftEtherVPN/SoftEtherVPN.git
+git clone https://github.com/hgijeon/SoftEtherVPN_Stable.git
 cd SoftEtherVPN
 git submodule init && git submodule update
 ./configure
